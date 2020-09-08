@@ -9,7 +9,7 @@ type Config = {
   fallbackUrl?: string;
 };
 
-type GeneralConfig = {forceFallbackUrl?: boolean; fallbackUrl?: string; chainId?: string; verifier?: Verifier};
+type GeneralConfig = Config & {forceFallbackUrl?: boolean};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TorusWrapper = any; // TODO ?
@@ -193,8 +193,12 @@ export class TorusModuleLoader implements Web3WModuleLoader {
     } else {
       this.id = 'torus';
     }
-    this.jsURL = (config && config.jsURL) || 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
-    this.jsURLIntegrity = config && config.jsURLIntegrity;
+    if (config && config.jsURL) {
+      this.jsURL = config.jsURL;
+      this.jsURLIntegrity = config.jsURLIntegrity;
+    } else {
+      this.jsURL = 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
+    }
     this.moduleConfig = config;
   }
 
