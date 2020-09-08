@@ -38,14 +38,11 @@ const knownChainIds = {
     '5': { host: 'goerli', networkName: 'Goerli Test Network' },
     '42': { host: 'kovan', networkName: 'Kovan Test Network' },
 };
-export class TorusModule {
-    constructor(conf) {
-        this.id = 'torus';
+class TorusModule {
+    constructor(id, conf) {
+        this.id = id;
         conf = conf || {};
-        const { forceFallbackUrl, fallbackUrl, chainId, jsURL, jsURLIntegrity, verifier } = conf;
-        this.id = 'torus';
-        this.jsURL = jsURL;
-        this.jsURLIntegrity = jsURLIntegrity;
+        const { forceFallbackUrl, fallbackUrl, chainId, verifier } = conf;
         this.chainId = chainId;
         this.forceFallbackUrl = forceFallbackUrl;
         this.fallbackUrl = fallbackUrl;
@@ -58,11 +55,6 @@ export class TorusModule {
             chainId = chainId || this.chainId;
             fallbackUrl = fallbackUrl || this.fallbackUrl;
             verifier = verifier || this.verifier;
-            const url = this.jsURL || 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
-            const integrity = this.jsURLIntegrity;
-            yield loadJS(url, integrity, 'anonymous');
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            Torus = window.Torus;
             if (fallbackUrl && !chainId) {
                 const response = yield fetch(fallbackUrl, {
                     headers: {
@@ -151,6 +143,32 @@ export class TorusModule {
     initiateTopup(provider, params) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.torusWrapper.initiateTopup(provider, params);
+        });
+    }
+}
+export class TorusModuleLoader {
+    constructor(config) {
+        const verifier = config && config.verifier;
+        if (verifier) {
+            this.id = 'torus-' + verifier;
+        }
+        else {
+            this.id = 'torus';
+        }
+        this.jsURL = (config && config.jsURL) || 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
+        this.jsURLIntegrity = config && config.jsURLIntegrity;
+        this.moduleConfig = config;
+    }
+    load() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!Torus) {
+                const url = this.jsURL;
+                const integrity = this.jsURLIntegrity;
+                yield loadJS(url, integrity, 'anonymous');
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                Torus = window.Torus;
+            }
+            return new TorusModule(this.id, this.moduleConfig);
         });
     }
 }

@@ -1,4 +1,4 @@
-import type {Web3WModule, WindowWeb3Provider} from 'web3w';
+import type {Web3WModule, WindowWeb3Provider, Web3WModuleLoader} from 'web3w';
 import {logs} from 'named-logs';
 const console = logs('web3w-torus:index');
 
@@ -8,10 +8,12 @@ type Config = {
   chainId?: string;
   fallbackUrl?: string;
 };
+
+type GeneralConfig = {forceFallbackUrl?: boolean; fallbackUrl?: string; chainId?: string; verifier?: Verifier};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TorusWrapper = any; // TODO ?
-
-let Torus;
+let Torus: any;
 
 function loadJS(url: string, integrity: string | undefined, crossorigin: string) {
   return new Promise(function (resolve, reject) {
@@ -48,29 +50,19 @@ const knownChainIds: {[chainId: string]: {host: string; networkName: string}} = 
   // '100': {host: 'xdai',
 };
 
-export class TorusModule implements Web3WModule {
-  public readonly id: string = 'torus';
+class TorusModule implements Web3WModule {
+  public readonly id: string;
+
   private torusWrapper: TorusWrapper;
   private chainId: string | undefined;
   private fallbackUrl: string | undefined;
-  private jsURL: string | undefined;
-  private jsURLIntegrity: string | undefined;
   private forceFallbackUrl: boolean | undefined;
   private verifier: Verifier | undefined;
 
-  constructor(conf: {
-    forceFallbackUrl?: boolean;
-    fallbackUrl?: string;
-    chainId?: string;
-    jsURL?: string;
-    jsURLIntegrity?: string;
-    verifier?: Verifier;
-  }) {
+  constructor(id: string, conf?: GeneralConfig) {
+    this.id = id;
     conf = conf || {};
-    const {forceFallbackUrl, fallbackUrl, chainId, jsURL, jsURLIntegrity, verifier} = conf;
-    this.id = 'torus';
-    this.jsURL = jsURL;
-    this.jsURLIntegrity = jsURLIntegrity;
+    const {forceFallbackUrl, fallbackUrl, chainId, verifier} = conf;
     this.chainId = chainId;
     this.forceFallbackUrl = forceFallbackUrl;
     this.fallbackUrl = fallbackUrl;
@@ -83,12 +75,6 @@ export class TorusModule implements Web3WModule {
     chainId = chainId || this.chainId;
     fallbackUrl = fallbackUrl || this.fallbackUrl;
     verifier = verifier || this.verifier;
-
-    const url = this.jsURL || 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
-    const integrity = this.jsURLIntegrity;
-    await loadJS(url, integrity, 'anonymous');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Torus = (window as any).Torus;
 
     if (fallbackUrl && !chainId) {
       const response = await fetch(fallbackUrl, {
@@ -182,5 +168,44 @@ export class TorusModule implements Web3WModule {
 
   async initiateTopup(provider: string, params: unknown): Promise<void> {
     await this.torusWrapper.initiateTopup(provider, params);
+  }
+}
+
+export class TorusModuleLoader implements Web3WModuleLoader {
+  public readonly id: string;
+
+  private jsURL: string;
+  private jsURLIntegrity: string | undefined;
+
+  private moduleConfig: GeneralConfig | undefined;
+
+  constructor(config?: {
+    forceFallbackUrl?: boolean;
+    fallbackUrl?: string;
+    chainId?: string;
+    verifier?: Verifier;
+    jsURL?: string;
+    jsURLIntegrity?: string;
+  }) {
+    const verifier = config && config.verifier;
+    if (verifier) {
+      this.id = 'torus-' + verifier;
+    } else {
+      this.id = 'torus';
+    }
+    this.jsURL = (config && config.jsURL) || 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
+    this.jsURLIntegrity = config && config.jsURLIntegrity;
+    this.moduleConfig = config;
+  }
+
+  async load(): Promise<Web3WModule> {
+    if (!Torus) {
+      const url = this.jsURL;
+      const integrity = this.jsURLIntegrity;
+      await loadJS(url, integrity, 'anonymous');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      Torus = (window as any).Torus;
+    }
+    return new TorusModule(this.id, this.moduleConfig);
   }
 }

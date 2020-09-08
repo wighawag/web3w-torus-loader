@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TorusModule = void 0;
+exports.TorusModuleLoader = void 0;
 const named_logs_1 = require("named-logs");
 const console = named_logs_1.logs('web3w-torus:index');
 let Torus;
@@ -42,13 +42,10 @@ const knownChainIds = {
     '42': { host: 'kovan', networkName: 'Kovan Test Network' },
 };
 class TorusModule {
-    constructor(conf) {
-        this.id = 'torus';
+    constructor(id, conf) {
+        this.id = id;
         conf = conf || {};
-        const { forceFallbackUrl, fallbackUrl, chainId, jsURL, jsURLIntegrity, verifier } = conf;
-        this.id = 'torus';
-        this.jsURL = jsURL;
-        this.jsURLIntegrity = jsURLIntegrity;
+        const { forceFallbackUrl, fallbackUrl, chainId, verifier } = conf;
         this.chainId = chainId;
         this.forceFallbackUrl = forceFallbackUrl;
         this.fallbackUrl = fallbackUrl;
@@ -61,11 +58,6 @@ class TorusModule {
             chainId = chainId || this.chainId;
             fallbackUrl = fallbackUrl || this.fallbackUrl;
             verifier = verifier || this.verifier;
-            const url = this.jsURL || 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
-            const integrity = this.jsURLIntegrity;
-            yield loadJS(url, integrity, 'anonymous');
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            Torus = window.Torus;
             if (fallbackUrl && !chainId) {
                 const response = yield fetch(fallbackUrl, {
                     headers: {
@@ -157,4 +149,30 @@ class TorusModule {
         });
     }
 }
-exports.TorusModule = TorusModule;
+class TorusModuleLoader {
+    constructor(config) {
+        const verifier = config && config.verifier;
+        if (verifier) {
+            this.id = 'torus-' + verifier;
+        }
+        else {
+            this.id = 'torus';
+        }
+        this.jsURL = (config && config.jsURL) || 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
+        this.jsURLIntegrity = config && config.jsURLIntegrity;
+        this.moduleConfig = config;
+    }
+    load() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!Torus) {
+                const url = this.jsURL;
+                const integrity = this.jsURLIntegrity;
+                yield loadJS(url, integrity, 'anonymous');
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                Torus = window.Torus;
+            }
+            return new TorusModule(this.id, this.moduleConfig);
+        });
+    }
+}
+exports.TorusModuleLoader = TorusModuleLoader;
