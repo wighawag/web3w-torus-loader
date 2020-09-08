@@ -134,7 +134,7 @@ class TorusModule implements Web3WModule {
     };
   }
 
-  async logout(): Promise<void> {
+  async disconnect(): Promise<void> {
     this.torusWrapper.hideTorusButton();
     try {
       await this.torusWrapper.logout(); // TODO ? cleanUp();

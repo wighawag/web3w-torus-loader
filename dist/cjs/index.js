@@ -110,7 +110,7 @@ class TorusModule {
             };
         });
     }
-    logout() {
+    disconnect() {
         return __awaiter(this, void 0, void 0, function* () {
             this.torusWrapper.hideTorusButton();
             try {
