@@ -126,15 +126,25 @@ class TorusModule implements Web3WModule {
       throw e;
     }
 
+    // TODO remove
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).torusWrapper = this.torusWrapper;
+
     return {
       web3Provider: this.torusWrapper.provider,
       chainId,
     };
   }
 
-  async disconnect(): Promise<void> {
+  disconnect(): void {
+    this.torusWrapper = undefined;
+
+    // TODO remove
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).torusWrapper = undefined;
+  }
+
+  async logout(): Promise<void> {
     this.torusWrapper.hideTorusButton();
     try {
       await this.torusWrapper.logout(); // TODO ? cleanUp();

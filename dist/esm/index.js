@@ -99,6 +99,7 @@ class TorusModule {
                 }
                 throw e;
             }
+            // TODO remove
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             window.torusWrapper = this.torusWrapper;
             return {
@@ -108,6 +109,12 @@ class TorusModule {
         });
     }
     disconnect() {
+        this.torusWrapper = undefined;
+        // TODO remove
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        window.torusWrapper = undefined;
+    }
+    logout() {
         return __awaiter(this, void 0, void 0, function* () {
             this.torusWrapper.hideTorusButton();
             try {
