@@ -184,39 +184,41 @@ class TorusModule implements Web3WModule {
 export class TorusModuleLoader implements Web3WModuleLoader {
   public readonly id: string;
 
-  private jsURL: string;
-  private jsURLIntegrity: string | undefined;
+  private static _jsURL = 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
+  private static _jsURLIntegrity: string | undefined;
+  private static _jsURLUsed = false;
 
   private moduleConfig: GeneralConfig | undefined;
 
-  constructor(config?: {
-    forceFallbackUrl?: boolean;
-    fallbackUrl?: string;
-    chainId?: string;
-    verifier?: Verifier;
-    jsURL?: string;
-    jsURLIntegrity?: string;
-  }) {
+  static setJsURL(jsURL: string, jsURLIntegrity?: string): void {
+    if (TorusModuleLoader._jsURLUsed) {
+      throw new Error(`cannot change js url once used`);
+    }
+    TorusModuleLoader._jsURL = jsURL;
+    TorusModuleLoader._jsURLIntegrity = jsURLIntegrity;
+  }
+
+  constructor(config?: {forceFallbackUrl?: boolean; fallbackUrl?: string; chainId?: string; verifier?: Verifier}) {
     const verifier = config && config.verifier;
     if (verifier) {
       this.id = 'torus-' + verifier;
     } else {
       this.id = 'torus';
     }
-    if (config && config.jsURL) {
-      this.jsURL = config.jsURL;
-      this.jsURLIntegrity = config.jsURLIntegrity;
-    } else {
-      this.jsURL = 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
-    }
     this.moduleConfig = config;
   }
 
   async load(): Promise<Web3WModule> {
     if (!Torus) {
-      const url = this.jsURL;
-      const integrity = this.jsURLIntegrity;
-      await loadJS(url, integrity, 'anonymous');
+      const url = TorusModuleLoader._jsURL;
+      const integrity = TorusModuleLoader._jsURLIntegrity;
+      TorusModuleLoader._jsURLUsed = true;
+      try {
+        await loadJS(url, integrity, 'anonymous');
+      } catch (e) {
+        TorusModuleLoader._jsURLUsed = false;
+        throw e;
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Torus = (window as any).Torus;
     }
