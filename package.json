@@ -1,11 +1,10 @@
 {
   "name": "web3w-torus-loader",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "torus module loader for web3w",
-  "main": "dist/cjs/index.js",
+  "main": "dist/amd/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
-  "browser": "dist/amd/index.js",
   "files": [
     "dist/"
   ],
@@ -44,12 +43,11 @@
     "prepare": "node .setup.js && npm run lint && npm run build",
     "dev": "tsc -w -p tsconfig.json",
     "build:esm": "rimraf dist/esm && tsc -p tsconfig.json",
-    "build:cjs": "rimraf dist/cjs && tsc -p tsconfig-cjs.json",
     "build:amd": "rimraf dist/amd && tsc -p tsconfig-amd.json && terser-folder dist/amd -e -x .js -o dist/amd --config-file terser.json",
-    "build": "run-s build:esm build:cjs build:amd",
+    "build": "run-s build:esm build:amd",
     "lint": "eslint src/**/*.{js,ts,tsx} --quiet --fix"
   },
   "dependencies": {
-    "named-logs": "^0.0.7"
+    "named-logs": "0.0.13"
   }
 }

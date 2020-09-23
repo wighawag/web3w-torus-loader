@@ -3,16 +3,16 @@ declare module "index" {
     type Verifier = 'google' | 'facebook' | 'twitch' | 'reddit' | 'discord';
     export class TorusModuleLoader implements Web3WModuleLoader {
         readonly id: string;
-        private jsURL;
-        private jsURLIntegrity;
+        private static _jsURL;
+        private static _jsURLIntegrity;
+        private static _jsURLUsed;
         private moduleConfig;
+        static setJsURL(jsURL: string, jsURLIntegrity?: string): void;
         constructor(config?: {
             forceFallbackUrl?: boolean;
             fallbackUrl?: string;
             chainId?: string;
             verifier?: Verifier;
-            jsURL?: string;
-            jsURLIntegrity?: string;
         });
         load(): Promise<Web3WModule>;
     }

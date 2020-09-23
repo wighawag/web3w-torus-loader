@@ -162,21 +162,28 @@ export class TorusModuleLoader {
         else {
             this.id = 'torus';
         }
-        if (config && config.jsURL) {
-            this.jsURL = config.jsURL;
-            this.jsURLIntegrity = config.jsURLIntegrity;
-        }
-        else {
-            this.jsURL = 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
-        }
         this.moduleConfig = config;
+    }
+    static setJsURL(jsURL, jsURLIntegrity) {
+        if (TorusModuleLoader._jsURLUsed) {
+            throw new Error(`cannot change js url once used`);
+        }
+        TorusModuleLoader._jsURL = jsURL;
+        TorusModuleLoader._jsURLIntegrity = jsURLIntegrity;
     }
     load() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!Torus) {
-                const url = this.jsURL;
-                const integrity = this.jsURLIntegrity;
-                yield loadJS(url, integrity, 'anonymous');
+                const url = TorusModuleLoader._jsURL;
+                const integrity = TorusModuleLoader._jsURLIntegrity;
+                TorusModuleLoader._jsURLUsed = true;
+                try {
+                    yield loadJS(url, integrity, 'anonymous');
+                }
+                catch (e) {
+                    TorusModuleLoader._jsURLUsed = false;
+                    throw e;
+                }
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 Torus = window.Torus;
             }
@@ -184,4 +191,6 @@ export class TorusModuleLoader {
         });
     }
 }
+TorusModuleLoader._jsURL = 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
+TorusModuleLoader._jsURLUsed = false;
 //# sourceMappingURL=index.js.map
