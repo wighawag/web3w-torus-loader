@@ -86,7 +86,7 @@ class TorusModule {
                 };
             }
             this.torusWrapper = new Torus();
-            yield this.torusWrapper.init({ network, showTorusButton: false });
+            yield this.torusWrapper.init(Object.assign({ network, showTorusButton: false }, config));
             this.torusWrapper.showTorusButton();
             try {
                 const result = yield this.torusWrapper.login(verifier ? { verifier } : undefined);

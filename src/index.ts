@@ -7,12 +7,15 @@ type Config = {
   verifier?: Verifier;
   chainId?: string;
   nodeUrl?: string;
+  enableLogging?: boolean;
+  buildEnv?: 'production' | 'development' | 'staging' | 'testing';
 };
 
 type GeneralConfig = Config & {forceNodeUrl?: boolean};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TorusWrapper = any; // TODO ?
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let Torus: any;
 
 function loadJS(url: string, integrity: string | undefined, crossorigin: string) {
@@ -113,7 +116,7 @@ class TorusModule implements Web3WModule {
     }
 
     this.torusWrapper = new Torus();
-    await this.torusWrapper.init({network, showTorusButton: false});
+    await this.torusWrapper.init({network, showTorusButton: false, ...config});
     this.torusWrapper.showTorusButton();
     try {
       const result = await this.torusWrapper.login(verifier ? {verifier} : undefined);
