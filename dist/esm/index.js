@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { logs } from 'named-logs';
 const console = logs('web3w-torus:index');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let Torus;
 function loadJS(url, integrity, crossorigin) {
     return new Promise(function (resolve, reject) {

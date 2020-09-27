@@ -9,9 +9,8 @@ type Config = {
   nodeUrl?: string;
   enableLogging?: boolean;
   buildEnv?: 'production' | 'development' | 'staging' | 'testing';
+  forceNodeUrl?: boolean;
 };
-
-type GeneralConfig = Config & {forceNodeUrl?: boolean};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TorusWrapper = any; // TODO ?
@@ -62,7 +61,7 @@ class TorusModule implements Web3WModule {
   private forceNodeUrl: boolean | undefined;
   private verifier: Verifier | undefined;
 
-  constructor(id: string, conf?: GeneralConfig) {
+  constructor(id: string, conf?: Config) {
     this.id = id;
     conf = conf || {};
     const {forceNodeUrl, nodeUrl, chainId, verifier} = conf;
@@ -193,7 +192,7 @@ export class TorusModuleLoader implements Web3WModuleLoader {
   private static _jsURLIntegrity: string | undefined;
   private static _jsURLUsed = false;
 
-  private moduleConfig: GeneralConfig | undefined;
+  private moduleConfig: Config | undefined;
 
   static setJsURL(jsURL: string, jsURLIntegrity?: string): void {
     if (TorusModuleLoader._jsURLUsed) {
@@ -203,7 +202,7 @@ export class TorusModuleLoader implements Web3WModuleLoader {
     TorusModuleLoader._jsURLIntegrity = jsURLIntegrity;
   }
 
-  constructor(config?: {forceNodeUrl?: boolean; nodeUrl?: string; chainId?: string; verifier?: Verifier}) {
+  constructor(config?: Config) {
     const verifier = config && config.verifier;
     if (verifier) {
       this.id = 'torus-' + verifier;
