@@ -60,10 +60,12 @@ class TorusModule implements Web3WModule {
   private nodeUrl: string | undefined;
   private forceNodeUrl: boolean | undefined;
   private verifier: Verifier | undefined;
+  private config: Config;
 
   constructor(id: string, conf?: Config) {
     this.id = id;
     conf = conf || {};
+    this.config = conf;
     const {forceNodeUrl, nodeUrl, chainId, verifier} = conf;
     this.chainId = chainId;
     this.forceNodeUrl = forceNodeUrl;
@@ -72,7 +74,8 @@ class TorusModule implements Web3WModule {
   }
 
   async setup(config?: Config): Promise<{chainId: string; web3Provider: WindowWeb3Provider}> {
-    config = config || {};
+    config = Object.assign({}, this.config);
+    config = Object.assign(config, config || {});
     let {chainId, nodeUrl, verifier} = config;
     chainId = chainId || this.chainId;
     nodeUrl = nodeUrl || this.nodeUrl;

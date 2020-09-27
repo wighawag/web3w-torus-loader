@@ -43,6 +43,7 @@ class TorusModule {
     constructor(id, conf) {
         this.id = id;
         conf = conf || {};
+        this.config = conf;
         const { forceNodeUrl, nodeUrl, chainId, verifier } = conf;
         this.chainId = chainId;
         this.forceNodeUrl = forceNodeUrl;
@@ -51,7 +52,8 @@ class TorusModule {
     }
     setup(config) {
         return __awaiter(this, void 0, void 0, function* () {
-            config = config || {};
+            config = Object.assign({}, this.config);
+            config = Object.assign(config, config || {});
             let { chainId, nodeUrl, verifier } = config;
             chainId = chainId || this.chainId;
             nodeUrl = nodeUrl || this.nodeUrl;
