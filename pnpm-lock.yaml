@@ -4,7 +4,7 @@ devDependencies:
   '@ethersproject/bignumber': 5.0.6
   '@ethersproject/contracts': 5.0.3
   '@ethersproject/providers': 5.0.7
-  '@toruslabs/torus-embed': 1.8.3
+  '@toruslabs/torus-embed': 1.8.5
   '@typescript-eslint/eslint-plugin': 3.10.1_6a22fa4fe8bc6ecce690fddc7e030a84
   '@typescript-eslint/parser': 3.10.1_eslint@7.8.1+typescript@3.9.7
   eslint: 7.8.1
@@ -315,7 +315,7 @@ packages:
       '@babel/runtime': 7.x
     resolution:
       integrity: sha512-2Hm34F3GOwg41jEaZs1rVF4b+SGwC2mPeR7WhkkkM1cQNlXyCtcgLNLqlCVrww9e6pfBCZ2h3aEQVw+p4cT4fw==
-  /@toruslabs/torus-embed/1.8.3:
+  /@toruslabs/torus-embed/1.8.5:
     dependencies:
       '@chaitanyapotti/random-id': 1.0.3
       '@toruslabs/fetch-node-details': 2.3.0
@@ -339,7 +339,7 @@ packages:
     peerDependencies:
       '@babel/runtime': 7.x
     resolution:
-      integrity: sha512-wI+mDF3oj6QsHPcLrApVEXmddBcIzrB5JMdxR/V5Jag2Rlk3bRFf7VkxI4mXz0+Qf+He6+fa2VXWCITZMlaDeQ==
+      integrity: sha512-NaA5F1xIunoazcDf5eeLapjCe14S2EFAcEk+t3oAzHHax290r661xQUJFW0s9xxSKUu7KaCHfPMn7ZALXE3tCA==
   /@toruslabs/torus.js/2.2.5:
     dependencies:
       '@toruslabs/eccrypto': 1.1.5
@@ -2850,7 +2850,7 @@ specifiers:
   '@ethersproject/bignumber': ^5.0.0
   '@ethersproject/contracts': ^5.0.0
   '@ethersproject/providers': ^5.0.0
-  '@toruslabs/torus-embed': ^1.8.3
+  '@toruslabs/torus-embed': ^1.8.5
   '@typescript-eslint/eslint-plugin': ^3.9.1
   '@typescript-eslint/parser': ^3.9.1
   eslint: ^7.7.0

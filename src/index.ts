@@ -191,7 +191,7 @@ class TorusModule implements Web3WModule {
 export class TorusModuleLoader implements Web3WModuleLoader {
   public readonly id: string;
 
-  private static _jsURL = 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
+  private static _jsURL = 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed@1.8.5';
   private static _jsURLIntegrity: string | undefined;
   private static _jsURLUsed = false;
 

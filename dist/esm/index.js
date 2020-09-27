@@ -196,6 +196,6 @@ export class TorusModuleLoader {
         });
     }
 }
-TorusModuleLoader._jsURL = 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed';
+TorusModuleLoader._jsURL = 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed@1.8.5';
 TorusModuleLoader._jsURLUsed = false;
 //# sourceMappingURL=index.js.map
