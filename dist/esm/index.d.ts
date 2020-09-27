@@ -8,8 +8,8 @@ export declare class TorusModuleLoader implements Web3WModuleLoader {
     private moduleConfig;
     static setJsURL(jsURL: string, jsURLIntegrity?: string): void;
     constructor(config?: {
-        forceFallbackUrl?: boolean;
-        fallbackUrl?: string;
+        forceNodeUrl?: boolean;
+        nodeUrl?: string;
         chainId?: string;
         verifier?: Verifier;
     });

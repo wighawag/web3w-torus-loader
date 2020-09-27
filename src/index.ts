@@ -6,10 +6,10 @@ type Verifier = 'google' | 'facebook' | 'twitch' | 'reddit' | 'discord';
 type Config = {
   verifier?: Verifier;
   chainId?: string;
-  fallbackUrl?: string;
+  nodeUrl?: string;
 };
 
-type GeneralConfig = Config & {forceFallbackUrl?: boolean};
+type GeneralConfig = Config & {forceNodeUrl?: boolean};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TorusWrapper = any; // TODO ?
@@ -55,29 +55,29 @@ class TorusModule implements Web3WModule {
 
   private torusWrapper: TorusWrapper;
   private chainId: string | undefined;
-  private fallbackUrl: string | undefined;
-  private forceFallbackUrl: boolean | undefined;
+  private nodeUrl: string | undefined;
+  private forceNodeUrl: boolean | undefined;
   private verifier: Verifier | undefined;
 
   constructor(id: string, conf?: GeneralConfig) {
     this.id = id;
     conf = conf || {};
-    const {forceFallbackUrl, fallbackUrl, chainId, verifier} = conf;
+    const {forceNodeUrl, nodeUrl, chainId, verifier} = conf;
     this.chainId = chainId;
-    this.forceFallbackUrl = forceFallbackUrl;
-    this.fallbackUrl = fallbackUrl;
+    this.forceNodeUrl = forceNodeUrl;
+    this.nodeUrl = nodeUrl;
     this.verifier = verifier;
   }
 
   async setup(config?: Config): Promise<{chainId: string; web3Provider: WindowWeb3Provider}> {
     config = config || {};
-    let {chainId, fallbackUrl, verifier} = config;
+    let {chainId, nodeUrl, verifier} = config;
     chainId = chainId || this.chainId;
-    fallbackUrl = fallbackUrl || this.fallbackUrl;
+    nodeUrl = nodeUrl || this.nodeUrl;
     verifier = verifier || this.verifier;
 
-    if (fallbackUrl && !chainId) {
-      const response = await fetch(fallbackUrl, {
+    if (nodeUrl && !chainId) {
+      const response = await fetch(nodeUrl, {
         headers: {
           'content-type': 'application/json; charset=UTF-8',
         },
@@ -100,14 +100,14 @@ class TorusModule implements Web3WModule {
     const knownNetwork = knownChainIds[chainId];
 
     let network;
-    if (knownNetwork && !this.forceFallbackUrl) {
+    if (knownNetwork && !this.forceNodeUrl) {
       network = {
         ...knownNetwork,
         chainId: parseInt(chainId),
       };
     } else {
       network = {
-        host: fallbackUrl,
+        host: nodeUrl,
         chainId: parseInt(chainId),
       };
     }
@@ -125,6 +125,7 @@ class TorusModule implements Web3WModule {
       }
       throw e;
     }
+    this.torusWrapper.hideTorusButton();
 
     // TODO remove
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -137,6 +138,7 @@ class TorusModule implements Web3WModule {
   }
 
   disconnect(): void {
+    this.torusWrapper.hideTorusButton();
     this.torusWrapper = undefined;
 
     // TODO remove
@@ -198,7 +200,7 @@ export class TorusModuleLoader implements Web3WModuleLoader {
     TorusModuleLoader._jsURLIntegrity = jsURLIntegrity;
   }
 
-  constructor(config?: {forceFallbackUrl?: boolean; fallbackUrl?: string; chainId?: string; verifier?: Verifier}) {
+  constructor(config?: {forceNodeUrl?: boolean; nodeUrl?: string; chainId?: string; verifier?: Verifier}) {
     const verifier = config && config.verifier;
     if (verifier) {
       this.id = 'torus-' + verifier;

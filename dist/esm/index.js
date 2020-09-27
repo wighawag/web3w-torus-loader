@@ -42,21 +42,21 @@ class TorusModule {
     constructor(id, conf) {
         this.id = id;
         conf = conf || {};
-        const { forceFallbackUrl, fallbackUrl, chainId, verifier } = conf;
+        const { forceNodeUrl, nodeUrl, chainId, verifier } = conf;
         this.chainId = chainId;
-        this.forceFallbackUrl = forceFallbackUrl;
-        this.fallbackUrl = fallbackUrl;
+        this.forceNodeUrl = forceNodeUrl;
+        this.nodeUrl = nodeUrl;
         this.verifier = verifier;
     }
     setup(config) {
         return __awaiter(this, void 0, void 0, function* () {
             config = config || {};
-            let { chainId, fallbackUrl, verifier } = config;
+            let { chainId, nodeUrl, verifier } = config;
             chainId = chainId || this.chainId;
-            fallbackUrl = fallbackUrl || this.fallbackUrl;
+            nodeUrl = nodeUrl || this.nodeUrl;
             verifier = verifier || this.verifier;
-            if (fallbackUrl && !chainId) {
-                const response = yield fetch(fallbackUrl, {
+            if (nodeUrl && !chainId) {
+                const response = yield fetch(nodeUrl, {
                     headers: {
                         'content-type': 'application/json; charset=UTF-8',
                     },
@@ -76,12 +76,12 @@ class TorusModule {
             }
             const knownNetwork = knownChainIds[chainId];
             let network;
-            if (knownNetwork && !this.forceFallbackUrl) {
+            if (knownNetwork && !this.forceNodeUrl) {
                 network = Object.assign(Object.assign({}, knownNetwork), { chainId: parseInt(chainId) });
             }
             else {
                 network = {
-                    host: fallbackUrl,
+                    host: nodeUrl,
                     chainId: parseInt(chainId),
                 };
             }
@@ -99,6 +99,7 @@ class TorusModule {
                 }
                 throw e;
             }
+            this.torusWrapper.hideTorusButton();
             // TODO remove
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             window.torusWrapper = this.torusWrapper;
@@ -109,6 +110,7 @@ class TorusModule {
         });
     }
     disconnect() {
+        this.torusWrapper.hideTorusButton();
         this.torusWrapper = undefined;
         // TODO remove
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
