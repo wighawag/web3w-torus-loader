@@ -1,12 +1,13 @@
 {
   "name": "web3w-torus-loader",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "torus module loader for web3w",
   "main": "dist/amd/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "files": [
-    "dist/"
+    "dist/",
+    "src/"
   ],
   "author": "Ronan Sandford",
   "license": "MIT",
