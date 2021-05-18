@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,8 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { logs } from 'named-logs';
-const console = logs('web3w-torus:index');
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TorusModuleLoader = void 0;
+const named_logs_1 = require("named-logs");
+const console = named_logs_1.logs('web3w-torus:index');
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let Torus;
 function loadJS(url, integrity, crossorigin) {
@@ -163,7 +166,7 @@ class TorusModule {
         });
     }
 }
-export class TorusModuleLoader {
+class TorusModuleLoader {
     constructor(config) {
         const verifier = config && config.verifier;
         if (verifier) {
@@ -201,6 +204,7 @@ export class TorusModuleLoader {
         });
     }
 }
+exports.TorusModuleLoader = TorusModuleLoader;
 TorusModuleLoader._jsURL = 'https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed@1.8.5';
 TorusModuleLoader._jsURLUsed = false;
 //# sourceMappingURL=index.js.map

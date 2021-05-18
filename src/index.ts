@@ -18,7 +18,7 @@ type TorusWrapper = any; // TODO ?
 let Torus: any;
 
 function loadJS(url: string, integrity: string | undefined, crossorigin: string) {
-  return new Promise(function (resolve, reject) {
+  return new Promise<void>(function (resolve, reject) {
     const script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = url;
